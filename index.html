@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI CampusFind — Find. Verify. Return.</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">⌁</div>
+      <div>
+        <h1>AI CampusFind</h1>
+        <p>Find. Verify. Return.</p>
+      </div>
+    </div>
+    <div class="status"><span></span> Prototype Mode</div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">AI-POWERED CAMPUS LOST & FOUND</span>
+        <h2>Match the item.<br><em>Verify the person.</em><br>Then return it.</h2>
+        <p>A centralized campus recovery hub that turns photos and context into ranked matches, then gates handover with private verification.</p>
+      </div>
+      <div class="hero-card">
+        <div class="mini-stat"><b id="itemCount">0</b><span>Reported items</span></div>
+        <div class="mini-stat"><b id="matchCount">0</b><span>Matched cases</span></div>
+        <div class="mini-stat"><b id="returnCount">0</b><span>Safe returns</span></div>
+      </div>
+    </section>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="report">1. Report Item</button>
+      <button class="tab" data-tab="matches">2. Find Matches</button>
+      <button class="tab" data-tab="verify">3. Verify & Return</button>
+      <button class="tab" data-tab="records">4. Records</button>
+    </nav>
+
+    <section id="report" class="panel active-panel">
+      <div class="section-head">
+        <div>
+          <span class="step">01 / REPORT</span>
+          <h3>Report a lost or found item</h3>
+          <p>Upload a photo and add basic context. The prototype simulates multimodal attribute extraction.</p>
+        </div>
+      </div>
+
+      <form id="reportForm">
+        <div class="grid two">
+          <label>
+            I am reporting
+            <select id="reportType" required>
+              <option value="lost">I lost an item</option>
+              <option value="found">I found an item</option>
+            </select>
+          </label>
+          <label>
+            Item category
+            <select id="category" required>
+              <option value="">Select category</option>
+              <option>Student ID</option><option>Wallet</option><option>Backpack</option>
+              <option>Laptop</option><option>Phone</option><option>Book</option>
+              <option>Headphones</option><option>Accessories</option><option>Other</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid two">
+          <label>
+            Item name
+            <input id="itemName" placeholder="e.g. Black Lenovo laptop" required>
+          </label>
+          <label>
+            Campus / location
+            <input id="location" placeholder="e.g. Library Block B" required>
+          </label>
+        </div>
+
+        <div class="grid three">
+          <label>
+            Color
+            <input id="color" placeholder="e.g. Black">
+          </label>
+          <label>
+            Brand
+            <input id="brand" placeholder="e.g. Lenovo">
+          </label>
+          <label>
+            Date
+            <input id="date" type="date" required>
+          </label>
+        </div>
+
+        <label>
+          Visible marks / private details
+          <textarea id="details" rows="3" placeholder="Example: small scratch near the hinge, blue sticker inside the cover..."></textarea>
+          <small>Keep one private detail that only the true owner is likely to know. It will be used during verification.</small>
+        </label>
+
+        <label class="upload-box" id="uploadBox">
+          <input id="photo" type="file" accept="image/*">
+          <div id="uploadContent">
+            <div class="upload-icon">＋</div>
+            <strong>Upload item photo</strong>
+            <span>PNG, JPG or WEBP • optional in prototype</span>
+          </div>
+          <img id="preview" alt="Preview">
+        </label>
+
+        <div class="actions">
+          <button class="primary" type="submit">Analyze & Create Report →</button>
+          <button class="secondary" type="button" id="demoBtn">Load Demo Data</button>
+        </div>
+      </form>
+
+      <div id="analysisResult" class="analysis hidden"></div>
+    </section>
+
+    <section id="matches" class="panel">
+      <div class="section-head">
+        <div>
+          <span class="step">02 / MATCH</span>
+          <h3>AI-ranked candidate matches</h3>
+          <p>Matches are ranked using category, color, brand, location, date and extracted visual/context attributes.</p>
+        </div>
+        <button class="secondary" id="refreshMatches">Refresh matches</button>
+      </div>
+      <div id="matchList" class="match-list"></div>
+    </section>
+
+    <section id="verify" class="panel">
+      <div class="section-head">
+        <div>
+          <span class="step">03 / VERIFY</span>
+          <h3>Ownership verification</h3>
+          <p>A visual match never authorizes release. The claimant must prove a private item-specific detail.</p>
+        </div>
+      </div>
+      <div id="verifyEmpty" class="empty">
+        <div>✓</div>
+        <h4>Select a match first</h4>
+        <p>Go to Find Matches and click “Start verification” on a candidate.</p>
+      </div>
+      <form id="verifyForm" class="verify-card hidden">
+        <div class="verification-banner">🔐 Verification gate active</div>
+        <h4 id="verifyTitle">Verify ownership</h4>
+        <p id="verifyPrompt"></p>
+        <label>
+          Your answer
+          <input id="verifyAnswer" placeholder="Enter the private detail" autocomplete="off" required>
+        </label>
+        <div class="actions">
+          <button class="primary" type="submit">Verify & Authorize Handover</button>
+          <button class="secondary" type="button" id="cancelVerify">Cancel</button>
+        </div>
+        <div id="verifyResult"></div>
+      </form>
+    </section>
+
+    <section id="records" class="panel">
+      <div class="section-head">
+        <div>
+          <span class="step">04 / RECORDS</span>
+          <h3>Campus recovery records</h3>
+          <p>Local prototype storage keeps reports and verification history in your browser.</p>
+        </div>
+        <button class="danger" id="clearData">Clear local data</button>
+      </div>
+      <div id="recordList" class="record-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <span>AI CampusFind • HackBase Hackathon Prototype</span>
+    <span>HTML • CSS • JavaScript</span>
+  </footer>
+
+  <div id="toast" class="toast"></div>
+  <script src="script.js"></script>
+</body>
+</html>
